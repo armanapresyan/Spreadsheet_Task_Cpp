@@ -1,6 +1,18 @@
 #include "spreadsheet.h"
 #include <iostream>
 
+
+std::ostream& operator<<(std::ostream& os, const Spreadsheet& s) {
+    for (int i = 0; i < s.get_row(); ++i) {
+        for (int j = 0; j < s.get_column(); ++j) {
+            os << s.getCell(i, j)->getStringValue() << '\t'; 
+        }
+        os << '\n'; 
+    }
+    return os;
+}
+
+
 Spreadsheet::Spreadsheet() {
 	m_row = 2;
 	m_column = 2;
@@ -9,6 +21,7 @@ Spreadsheet::Spreadsheet() {
 		m_cell[i] = new Spreadsheetcell[m_column];
 	}
 }
+
 
 
 Spreadsheet::Spreadsheet(int row, int column) {
@@ -60,6 +73,31 @@ Spreadsheet& Spreadsheet::operator=(const Spreadsheet& rhs) {
 
    return *this;
 
+}
+
+Spreadsheet Spreadsheet::operator+(const Spreadsheet& cell) {
+	int row = m_row + cell.m_row;
+	int column = (m_column > cell.m_column) ? m_column : cell.m_column;
+    Spreadsheet res(row, column);
+
+	for(int i = 0; i < m_row; ++i){
+        for(int j = 0; j < m_column; ++j){
+			res.m_cell[i][j] = m_cell[i][j];
+		}
+	}
+
+    
+	for(int i = 0; i < cell.m_row; ++i){
+        for(int j = 0; j < cell.m_column; ++j){
+			res.m_cell[i + m_row][j] = cell.m_cell[i][j];
+		}
+	}
+	
+	return res;
+}
+
+Spreadsheetcell* Spreadsheet::operator[](int row) const{
+        return m_cell[row];
 }
 
 
@@ -125,13 +163,20 @@ void Spreadsheet::removeColumn(int number) {
 	--m_column;
 }
 
-std::string Spreadsheet::getCell(int row, int col) {
-	if (row >= m_row || col >= m_column || row < 0 || col < 0) {
-		std::cout << "Invalid cell coordinates." << std::endl;
-	}
-	return m_cell[row][col].getStringValue();
+int Spreadsheet::get_row() const{
+	return m_row;
 }
 
+int Spreadsheet::get_column() const{
+	return m_column;
+}
+
+Spreadsheetcell* Spreadsheet::getCell(int row, int column) const {
+   if (row >= m_row || column >= m_column || row < 0 || column < 0) {
+      throw std::out_of_range{"Wrong coordinates."};
+   }
+   return &m_cell[row][column];
+}
 int Spreadsheet::getCellInt(int row, int col){
 	if (row >= m_row || col >= m_column || row < 0 || col < 0) {
 		std::cout << "Invalid cell coordinates." << std::endl;
@@ -180,3 +225,6 @@ void Spreadsheet::print() {
 	}
 
 }
+
+
+

@@ -5,11 +5,19 @@
 class Spreadsheetcell{
 	public:
 		Spreadsheetcell();
+		Spreadsheetcell& operator=(const Spreadsheetcell& rhs);
+		operator int();
+		operator double();
+		void operator++();
+		Spreadsheetcell operator++(int);
+		void operator--();
+		void operator--(int);
 		~Spreadsheetcell();
+	
 
 	public:
 		void setStringValue(const std::string& str);
-		std::string getStringValue();
+		std::string getStringValue() const;
 		int getIntValue();
 		double getDoubleValue();
 
